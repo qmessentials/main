@@ -1,3 +1,4 @@
+name: qmessentials
 services:
   auth:
     build:
@@ -27,6 +28,29 @@ services:
     ports:
       - 8010:8010
     restart: always
+  config-db:
+    image: postgres
+    environment: 
+     - POSTGRES_USER=qmeconfig
+     - POSTGRES_PASSWORD=n0t$3cr3t!
+    ports: 
+     - "5432:5432"
+    volumes:
+     - config-db-volume:/var/lib/postgresql/data
+  config:
+    build:
+      context: ../config
+      dockerfile: Dockerfile.configservice
+    environment: 
+      - USER=config
+      - PORT=3020   
+      - PGUSER=config
+      - PGPASSWORD=n0tS3cr3t!
+      - PGDATABASE=config
+      - PGHOST=config-db
+      - PGPORT=5410
+    ports:
+     - "3020:3020"
   client:
     build: ../qme-client
     environment:
@@ -45,5 +69,5 @@ services:
 
 volumes:
   auth-db-volume:
-
+  config-db-volume:
 
