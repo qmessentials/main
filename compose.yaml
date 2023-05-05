@@ -31,7 +31,7 @@ services:
   config-db:
     image: postgres
     environment: 
-     - POSTGRES_USER=qmeconfig
+     - POSTGRES_USER=config
      - POSTGRES_PASSWORD=n0t$3cr3t!
     ports: 
      - "5432:5432"
@@ -45,12 +45,19 @@ services:
       - USER=config
       - PORT=3020   
       - PGUSER=config
-      - PGPASSWORD=n0tS3cr3t!
+      - PGPASSWORD=n0t$3cr3t!
       - PGDATABASE=config
       - PGHOST=config-db
-      - PGPORT=5410
+      - PGPORT=5432
     ports:
      - "3020:3020"
+  config-reverse-proxy:
+    build:
+      context: ../config
+      dockerfile: Dockerfile.reverseproxy
+    ports:
+      - 8020:8020
+    restart: always
   client:
     build: ../qme-client
     environment:
