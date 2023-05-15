@@ -1,3 +1,4 @@
+name: qmessentials
 services:
   auth:
     build:
@@ -27,6 +28,49 @@ services:
     ports:
       - 8010:8010
     restart: always
+  config-db:
+    image: postgres
+    environment: 
+     - POSTGRES_USER=config
+     - POSTGRES_PASSWORD=n0t$3cr3t!
+    ports: 
+     - "5432:5432"
+    volumes:
+     - config-db-volume:/var/lib/postgresql/data
+  config:
+    build:
+      context: ../config
+      dockerfile: Dockerfile.configservice
+    environment: 
+     - USER=config
+     - PORT=3020   
+     - PGUSER=config
+     - PGPASSWORD=n0t$3cr3t!
+     - PGDATABASE=config
+     - PGHOST=config-db
+     - PGPORT=5432
+     - REDIS_ADDRESS=config-cache:6380
+     - AUTH_SERVICE_ENDPOINT=http://auth-reverse-proxy:8010
+     - AUTH_SERVICE_USER_ID=admin
+     - AUTH_SERVICE_PASSWORD=changeMeNow!!!
+    ports:
+     - "3020:3020"
+  config-reverse-proxy:
+    build:
+      context: ../config
+      dockerfile: Dockerfile.reverseproxy
+    ports:
+      - 8020:8020
+    restart: always
+  config-cache:
+    image: "redis:latest"
+    command: --port 6380
+    environment: 
+     - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+     - "6388:6388"
+    expose: 
+     - "6388"
   client:
     build: ../qme-client
     environment:
@@ -37,7 +81,7 @@ services:
     ports:
       - "3000:3000"
   client-cache:
-    image: 'redis:latest'
+    image: "redis:latest"
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
@@ -45,5 +89,5 @@ services:
 
 volumes:
   auth-db-volume:
-
+  config-db-volume:
 
