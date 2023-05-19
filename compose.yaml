@@ -76,6 +76,7 @@ services:
     environment:
       - BASE_URL=http://localhost:3000
       - AUTH_ENDPOINT=http://auth-reverse-proxy:8010
+      - CONFIG_ENDPOINT=http://config-reverse-proxy:8020
       - IRON_SESSION_PASSWORD=K5BLWMhisP1GMajAHH1WJQpBhsRoQmik
       - REDIS_URL=redis://client-cache:6379
     ports:
